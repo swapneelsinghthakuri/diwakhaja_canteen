@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Canteen Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>Swapneel School Canteen Management System</h1>
+            <p class="subtitle">Hybrid Module: Diwa Khaja + Commercial Canteen </p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <button class="nav-btn active" onclick="showSection('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="showSection('setup')">⚙️ Setup</button>
+            <button class="nav-btn" onclick="showSection('diwa-khaja')">🍱 Diwa Khaja (Free)</button>
+            <button class="nav-btn" onclick="showSection('canteen')">💰 Canteen Sale (Paid)</button>
+            <button class="nav-btn" onclick="showSection('reports')">📈 Reports</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard" class="section active">
+            <h2>Dashboard Overview</h2>
+            <div class="dashboard-grid">
+                <div class="stat-card blue">
+                    <h3>Today's Diwa Khaja</h3>
+                    <div class="stat-number" id="todayDiwaCount">0</div>
+                    <p>Students Served (Free)</p>
+                </div>
+                <div class="stat-card green">
+                    <h3>Today's Canteen Sales</h3>
+                    <div class="stat-number" id="todaySales">Rs0</div>
+                    <p>Total Revenue</p>
+                </div>
+                <div class="stat-card orange">
+                    <h3>Food Items</h3>
+                    <div class="stat-number" id="totalItems">0</div>
+                    <p>Active Items</p>
+                </div>
+                <div class="stat-card red">
+                    <h3>Low Stock Alert</h3>
+                    <div class="stat-number" id="lowStock">0</div>
+                    <p>Items Below 10</p>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="showSection('diwa-khaja'); showSubSection('distribution')">📝 Diwa Khaja Distribution</button>
+                    <button class="action-btn" onclick="showSection('canteen'); showSubSection('pos')">🛒 New Canteen Sale</button>
+                    <button class="action-btn" onclick="showSection('setup'); showSubSection('food-item')">➕ Add Food Item</button>
+                    <button class="action-btn" onclick="showSection('reports')">📊 View Reports</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETUP SECTION -->
+        <section id="setup" class="section">
+            <h2>⚙️ Setup & Masters</h2>
+            <p class="section-desc">Create and manage master data (one-time setup)</p>
+            
+            <div class="setup-tabs">
+                <button class="tab-btn active" onclick="showSubSection('canteen-master')">Canteen</button>
+                <button class="tab-btn" onclick="showSubSection('food-category')">Food Category</button>
+                <button class="tab-btn" onclick="showSubSection('food-item')">Food Items</button>
+                <button class="tab-btn" onclick="showSubSection('time-slot')">Time Slots</button>
+            </div>
+
+            <!-- Canteen Master -->
+            <div id="canteen-master" class="sub-section active">
+                <h3>1. Canteen Master</h3>
+                <div class="form-card">
+                    <form id="canteenForm">
+                        <div class="form-group">
+                            <label>Canteen Name *</label>
+                            <input type="text" id="canteenName" required placeholder="e.g., Main School Canteen">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="canteenDesc" rows="2" placeholder="Brief description of canteen"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Canteen</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Existing Canteens</h4>
+                    <table id="canteenTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Canteen Name</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Food Category -->
+            <div id="food-category" class="sub-section">
+                <h3>2. Food Category</h3>
+                <div class="form-card">
+                    <form id="categoryForm">
+                        <div class="form-group">
+                            <label>Category Name *</label>
+                            <input type="text" id="categoryName" required placeholder="e.g., Breakfast, Snacks, Drinks">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="categoryDesc" rows="2" placeholder="Category description"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Category</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Existing Categories</h4>
+                    <table id="categoryTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Category Name</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Food Items -->
+            <div id="food-item" class="sub-section">
+                <h3>3. Food Items</h3>
+                <div class="form-card">
+                    <form id="foodItemForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Food Category *</label>
+                                <select id="foodCategory" required>
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Food Name *</label>
+                                <input type="text" id="foodName" required placeholder="e.g., Samosa, Tea">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Unit / Volume *</label>
+                                <select id="foodUnit" required>
+                                    <option value="">Select Unit</option>
+                                    <option value="pcs">Pieces (pcs)</option>
+                                    <option value="plate">Plate</option>
+                                    <option value="glass">Glass</option>
+                                    <option value="cup">Cup</option>
+                                    <option value="bowl">Bowl</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Selling Price (Rs) *</label>
+                                <input type="number" id="foodPrice" required min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="foodDesc" rows="2" placeholder="Food item description"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Food Item</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Existing Food Items</h4>
+                    <table id="foodItemTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Category</th>
+                                <th>Food Name</th>
+                                <th>Unit</th>
+                                <th>Price (Rs)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Time Slot -->
+            <div id="time-slot" class="sub-section">
+                <h3>4. Time Slot Master</h3>
+                <div class="form-card">
+                    <form id="timeSlotForm">
+                        <div class="form-group">
+                            <label>Time Slot Name *</label>
+                            <input type="text" id="slotName" required placeholder="e.g., Morning, Tiffin, Lunch">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="slotDesc" rows="2" placeholder="Time slot description"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Time Slot</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Existing Time Slots</h4>
+                    <table id="timeSlotTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Time Slot</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIWA KHAJA SECTION -->
+        <section id="diwa-khaja" class="section">
+            <h2>🍱 Diwa Khaja (Free Food Distribution)</h2>
+            <p class="section-desc">Government-funded free food program</p>
+            
+            <div class="setup-tabs">
+                <button class="tab-btn active" onclick="showSubSection('menu-setup')">Menu Setup</button>
+                <button class="tab-btn" onclick="showSubSection('distribution')">Distribution</button>
+                <button class="tab-btn" onclick="showSubSection('diwa-reports')">Reports</button>
+            </div>
+
+            <!-- Menu Setup -->
+            <div id="menu-setup" class="sub-section active">
+                <h3>5. Diwa Khaja Menu Setup</h3>
+                <div class="form-card">
+                    <form id="diwaMenuForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Class *</label>
+                                <select id="diwaClass" required>
+                                    <option value="">Select Class</option>
+                                    <option value="Class 1">Class 1</option>
+                                    <option value="Class 2">Class 2</option>
+                                    <option value="Class 3">Class 3</option>
+                                    <option value="Class 4">Class 4</option>
+                                    <option value="Class 5">Class 5</option>
+                                    <option value="Class 6">Class 6</option>
+                                    <option value="Class 7">Class 7</option>
+                                    <option value="Class 8">Class 8</option>
+                                    <option value="Class 9">Class 9</option>
+                                    <option value="Class 10">Class 10</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Time Slot *</label>
+                                <select id="diwaTimeSlot" required>
+                                    <option value="">Select Time Slot</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Food Item *</label>
+                                <select id="diwaFoodItem" required>
+                                    <option value="">Select Food Item</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity per Student *</label>
+                                <input type="number" id="diwaQuantity" required min="1" value="1">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Menu</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Configured Menus</h4>
+                    <table id="diwaMenuTable">
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Time Slot</th>
+                                <th>Food Item</th>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Distribution -->
+            <div id="distribution" class="sub-section">
+                <h3>6. Diwa Khaja Distribution</h3>
+                <div class="form-card">
+                    <form id="distributionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" id="distDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Class *</label>
+                                <select id="distClass" required>
+                                    <option value="">Select Class</option>
+                                    <option value="Class 1">Class 1</option>
+                                    <option value="Class 2">Class 2</option>
+                                    <option value="Class 3">Class 3</option>
+                                    <option value="Class 4">Class 4</option>
+                                    <option value="Class 5">Class 5</option>
+                                    <option value="Class 6">Class 6</option>
+                                    <option value="Class 7">Class 7</option>
+                                    <option value="Class 8">Class 8</option>
+                                    <option value="Class 9">Class 9</option>
+                                    <option value="Class 10">Class 10</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Time Slot *</label>
+                                <select id="distTimeSlot" required>
+                                    <option value="">Select Time Slot</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="loadStudentsForDistribution()">Load Students</button>
+                    </form>
+                </div>
+                <div class="data-table" id="distributionTableDiv" style="display:none;">
+                    <h4>Mark Distribution</h4>
+                    <table id="distributionTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Food Item</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button type="button" class="btn-success" onclick="saveDistribution()">Save Distribution</button>
+                </div>
+            </div>
+
+            <!-- Diwa Reports -->
+            <div id="diwa-reports" class="sub-section">
+                <h3>7. Diwa Khaja Reports</h3>
+                <div class="report-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="diwaReportType">
+                                <option value="daily">Daily Distribution</option>
+                                <option value="class">Class-wise</option>
+                                <option value="student">Student-wise</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="diwaReportDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Class (Optional)</label>
+                            <select id="diwaReportClass">
+                                <option value="">All Classes</option>
+                                <option value="Class 1">Class 1</option>
+                                <option value="Class 2">Class 2</option>
+                                <option value="Class 3">Class 3</option>
+                                <option value="Class 4">Class 4</option>
+                                <option value="Class 5">Class 5</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn-primary" onclick="generateDiwaReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table" id="diwaReportDiv">
+                    <h4>Report Results</h4>
+                    <div id="diwaReportContent"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CANTEEN SECTION -->
+        <section id="canteen" class="section">
+            <h2>💰 Canteen Sale (Paid)</h2>
+            <p class="section-desc">Commercial canteen billing and sales</p>
+            
+            <div class="setup-tabs">
+                <button class="tab-btn active" onclick="showSubSection('pos')">POS / Billing</button>
+                <button class="tab-btn" onclick="showSubSection('sales-reports')">Sales Reports</button>
+            </div>
+
+            <!-- POS / Billing -->
+            <div id="pos" class="sub-section active">
+                <h3>8. Canteen Sale / Billing (POS)</h3>
+                <div class="pos-container">
+                    <div class="pos-left">
+                        <form id="posForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date *</label>
+                                    <input type="date" id="posDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Time Slot *</label>
+                                    <select id="posTimeSlot" required>
+                                        <option value="">Select Time Slot</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Customer Type *</label>
+                                <select id="posCustomerType" required>
+                                    <option value="">Select Customer Type</option>
+                                    <option value="Student">Student</option>
+                                    <option value="Teacher">Teacher</option>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Walk-in">Walk-in</option>
+                                </select>
+                            </div>
+                            <hr>
+                            <h4>Add Items</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Food Item *</label>
+                                    <select id="posItem">
+                                        <option value="">Select Item</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantity *</label>
+                                    <input type="number" id="posQuantity" min="1" value="1">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn-secondary" onclick="addItemToCart()">Add to Cart</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="pos-right">
+                        <div class="cart-card">
+                            <h4>Cart Items</h4>
+                            <table id="cartTable">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Qty</th>
+                                        <th>Rate</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <div class="cart-total">
+                                <h3>Total: Rs<span id="cartTotal">0.00</span></h3>
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Mode</label>
+                                <select id="posPaymentMode">
+                                    <option value="Cash">Cash</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn-success btn-large" onclick="completeSale()">Complete Sale</button>
+                            <button type="button" class="btn-danger" onclick="clearCart()">Clear Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Reports -->
+            <div id="sales-reports" class="sub-section">
+                <h3>9. Sales Reports</h3>
+                <div class="report-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="salesReportType">
+                                <option value="daily">Daily Sales</option>
+                                <option value="item">Item-wise Sales</option>
+                                <option value="timeslot">Time Slot-wise Sales</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="salesReportDate">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn-primary" onclick="generateSalesReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table" id="salesReportDiv">
+                    <h4>Report Results</h4>
+                    <div id="salesReportContent"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REPORTS SECTION -->
+        <section id="reports" class="section">
+            <h2>📈 Stock & Expense Reports</h2>
+            <p class="section-desc">Inventory management and expense tracking</p>
+            
+            <div class="setup-tabs">
+                <button class="tab-btn active" onclick="showSubSection('stock')">Stock Management</button>
+                <button class="tab-btn" onclick="showSubSection('expenses')">Expenses</button>
+                <button class="tab-btn" onclick="showSubSection('combined-reports')">Combined Reports</button>
+            </div>
+
+            <!-- Stock Management -->
+            <div id="stock" class="sub-section active">
+                <h3>10. Stock Management</h3>
+                <div class="form-card">
+                    <form id="stockForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" id="stockDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Food Item *</label>
+                                <select id="stockItem" required>
+                                    <option value="">Select Item</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Opening Stock</label>
+                                <input type="number" id="stockOpening" min="0" value="0" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Purchase Quantity *</label>
+                                <input type="number" id="stockPurchase" required min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="alert-info">
+                            <strong>Note:</strong> Stock is automatically deducted when:
+                            <ul>
+                                <li>Diwa Khaja food is distributed</li>
+                                <li>Canteen sale is made</li>
+                            </ul>
+                            Closing Stock = Opening + Purchase - (Diwa Khaja + Canteen Sales)
+                        </div>
+                        <button type="submit" class="btn-primary">Update Stock</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Current Stock Status</h4>
+                    <table id="stockTable">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Opening</th>
+                                <th>Purchase</th>
+                                <th>Diwa Khaja Used</th>
+                                <th>Canteen Sold</th>
+                                <th>Closing Stock</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Expenses -->
+            <div id="expenses" class="sub-section">
+                <h3>11. Expense Management</h3>
+                <div class="form-card">
+                    <form id="expenseForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" id="expenseDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Expense Name *</label>
+                                <select id="expenseName" required>
+                                    <option value="">Select Expense Type</option>
+                                    <option value="Gas">Gas</option>
+                                    <option value="Vegetables">Vegetables</option>
+                                    <option value="Groceries">Groceries</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Salary">Salary</option>
+                                    <option value="Electricity">Electricity</option>
+                                    <option value="Water">Water</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (Rs) *</label>
+                                <input type="number" id="expenseAmount" required min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="expenseDesc" rows="2" placeholder="Additional details"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Expense</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Recent Expenses</h4>
+                    <table id="expenseTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Expense Type</th>
+                                <th>Amount (Rs)</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Combined Reports -->
+            <div id="combined-reports" class="sub-section">
+                <h3>12. Stock & Expense Reports</h3>
+                <div class="report-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="combinedReportType">
+                                <option value="stock-summary">Stock Summary</option>
+                                <option value="expense-summary">Expense Summary</option>
+                                <option value="profit-loss">Profit & Loss</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>From Date</label>
+                            <input type="date" id="reportFromDate">
+                        </div>
+                        <div class="form-group">
+                            <label>To Date</label>
+                            <input type="date" id="reportToDate">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn-primary" onclick="generateCombinedReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table" id="combinedReportDiv">
+                    <h4>Report Results</h4>
+                    <div id="combinedReportContent"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; School Canteen Management System | Design By Swapneel Singh Thakuri </p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
