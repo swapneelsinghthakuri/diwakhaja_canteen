@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Canteen Management System</title>
+    <title>School Canteen & Mess Management System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <header class="header">
         <div class="container">
             <h1>Swapneel School Canteen Management System</h1>
-            <p class="subtitle">Hybrid Module: Diwa Khaja + Commercial Canteen </p>
+            <p class="subtitle">Hybrid Module: Diwa Khaja + Commercial Canteen + Mess Management</p>
         </div>
     </header>
 
@@ -22,9 +22,14 @@
             <button class="nav-btn" onclick="showSection('setup')">⚙️ Setup</button>
             <button class="nav-btn" onclick="showSection('diwa-khaja')">🍱 Diwa Khaja (Free)</button>
             <button class="nav-btn" onclick="showSection('canteen')">💰 Canteen Sale (Paid)</button>
-            <button class="nav-btn" onclick="showSection('reports')">📈 Reports</button>
+            <button class="nav-btn" onclick="showSection('qr-canteen')"> QR Canteen</button>
+            <button class="nav-btn" onclick="showSection('mess')"> Mess</button>
+            <button class="nav-btn" onclick="showSection('reports')"> Reports</button>
         </div>
     </nav>
+
+    <!-- Success Notification (floating) -->
+    <div id="successNotification" style="display:none; position:fixed; top:80px; right:20px; background:#48bb78; color:white; padding:15px 25px; border-radius:8px; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.15); font-weight:500;"></div>
 
     <!-- Main Content -->
     <main class="container">
@@ -60,6 +65,8 @@
                 <div class="action-buttons">
                     <button class="action-btn" onclick="showSection('diwa-khaja'); showSubSection('distribution')">📝 Diwa Khaja Distribution</button>
                     <button class="action-btn" onclick="showSection('canteen'); showSubSection('pos')">🛒 New Canteen Sale</button>
+                    <button class="action-btn" onclick="showSection('qr-canteen'); showSubSection('qr-pos')">📱 QR Quick Sale</button>
+                    <button class="action-btn" onclick="showSection('mess'); showSubSection('mess-student-entry')">🍽️ Mess Entry</button>
                     <button class="action-btn" onclick="showSection('setup'); showSubSection('food-item')">➕ Add Food Item</button>
                     <button class="action-btn" onclick="showSection('reports')">📊 View Reports</button>
                 </div>
@@ -76,6 +83,7 @@
                 <button class="tab-btn" onclick="showSubSection('food-category')">Food Category</button>
                 <button class="tab-btn" onclick="showSubSection('food-item')">Food Items</button>
                 <button class="tab-btn" onclick="showSubSection('time-slot')">Time Slots</button>
+                <button class="tab-btn" onclick="showSubSection('student-master')">Students</button>
             </div>
 
             <!-- Canteen Master -->
@@ -225,6 +233,70 @@
                                 <th>ID</th>
                                 <th>Time Slot</th>
                                 <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Student Master (NEW) -->
+            <div id="student-master" class="sub-section">
+                <h3>5. Student Master (for QR System)</h3>
+                <div class="form-card">
+                    <form id="studentForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Student ID *</label>
+                                <input type="text" id="studentId" required placeholder="e.g., STU001">
+                            </div>
+                            <div class="form-group">
+                                <label>Student Name *</label>
+                                <input type="text" id="studentName" required placeholder="e.g., Rahul Kumar">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Class *</label>
+                                <select id="studentClass" required>
+                                    <option value="">Select Class</option>
+                                    <option value="Class 1">Class 1</option>
+                                    <option value="Class 2">Class 2</option>
+                                    <option value="Class 3">Class 3</option>
+                                    <option value="Class 4">Class 4</option>
+                                    <option value="Class 5">Class 5</option>
+                                    <option value="Class 6">Class 6</option>
+                                    <option value="Class 7">Class 7</option>
+                                    <option value="Class 8">Class 8</option>
+                                    <option value="Class 9">Class 9</option>
+                                    <option value="Class 10">Class 10</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Daily Limit (Rs) *</label>
+                                <input type="number" id="studentDailyLimit" required min="0" value="100">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Initial Wallet Balance (Rs)</label>
+                                <input type="number" id="studentWallet" min="0" value="0" step="0.01">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Student</button>
+                    </form>
+                </div>
+                <div class="data-table">
+                    <h4>Existing Students</h4>
+                    <table id="studentTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Wallet Balance</th>
+                                <th>Daily Limit</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -514,6 +586,453 @@
                 <div class="data-table" id="salesReportDiv">
                     <h4>Report Results</h4>
                     <div id="salesReportContent"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QR CANTEEN SECTION -->
+        <section id="qr-canteen" class="section">
+            <h2>📱 QR-Based Canteen (Express Mode)</h2>
+            <p class="section-desc">Fast QR-based wallet sales for students</p>
+            
+            <div class="setup-tabs">
+                <button class="tab-btn active" onclick="showSubSection('qr-pos')">QR POS</button>
+                <button class="tab-btn" onclick="showSubSection('wallet-recharge')">Wallet Recharge</button>
+                <button class="tab-btn" onclick="showSubSection('qr-reports')">QR Reports</button>
+                <button class="tab-btn" onclick="showSubSection('parent-view')">Parent View</button>
+            </div>
+
+            <!-- QR POS -->
+            <div id="qr-pos" class="sub-section active">
+                <h3>QR Quick Sale</h3>
+                
+                <!-- Counter Selection -->
+                <div class="form-card">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Current Counter:</label>
+                            <select id="counterSelector" onchange="setCounterId(this.value)">
+                                <option value="C1">Counter 1</option>
+                                <option value="C2">Counter 2</option>
+                                <option value="C3">Counter 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Offline Queue:</label>
+                            <strong id="offlineQueueCount">0</strong> pending
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Scanner Input -->
+                <div class="form-card">
+                    <h4>Scan Student QR Code</h4>
+                    <input type="text" id="qrInput" placeholder="Scan QR or enter Student ID" 
+                           style="font-size:20px; padding:15px; width:100%; border:2px solid #667eea; border-radius:8px;"
+                           autofocus>
+                    <p style="margin-top:10px; color:#718096; font-size:14px;">
+                        <strong>Test IDs:</strong> STU001, STU002, STU003, STU004, STU005
+                    </p>
+                </div>
+
+                <!-- QR Student Panel (Hidden by default) -->
+                <div id="qrStudentPanel" style="display: none;" class="form-card">
+                    <h4>Scanned Student</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Student ID:</label>
+                            <strong id="qrStudentId" style="font-size:18px;">---</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <strong id="qrStudentName" style="font-size:18px;">---</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Class:</label>
+                            <strong id="qrStudentClass" style="font-size:18px;">---</strong>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Wallet Balance:</label>
+                            <h3 id="qrStudentBalance" style="color:#48bb78;">Rs0.00</h3>
+                        </div>
+                        <div class="form-group">
+                            <label>Today's Expense:</label>
+                            <strong id="qrTodayExpense" style="font-size:16px;">Rs0.00</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Remaining Limit:</label>
+                            <strong id="qrRemainingLimit" style="font-size:16px;">Rs0.00</strong>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Sale Buttons -->
+                    <h4 style="margin-top:20px;">Quick Sale (One-Tap)</h4>
+                    <div class="action-buttons" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(1)" disabled>Idli Rs20</button>
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(2)" disabled>Poha Rs15</button>
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(3)" disabled>Samosa Rs10</button>
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(4)" disabled>Vada Pav Rs15</button>
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(5)" disabled>Tea Rs10</button>
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(6)" disabled>Cold Drink Rs15</button>
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(7)" disabled>Rice Plate Rs40</button>
+                        <button class="quick-sale-btn btn-success" onclick="quickSale(8)" disabled>Chapati Rs35</button>
+                    </div>
+                    
+                    <button class="btn-danger" style="margin-top:20px;" onclick="resetQRSession()">Reset / Next Student</button>
+                </div>
+            </div>
+
+            <!-- Wallet Recharge -->
+            <div id="wallet-recharge" class="sub-section">
+                <h3>Wallet Recharge (Admin)</h3>
+                <div class="form-card">
+                    <form onsubmit="event.preventDefault(); 
+                                     const sid = document.getElementById('rechargeStudentId').value; 
+                                     const amt = parseFloat(document.getElementById('rechargeAmount').value); 
+                                     const mode = document.getElementById('rechargeMode').value; 
+                                     if(rechargeWallet(sid, amt, mode)) this.reset();">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Student ID *</label>
+                                <input type="text" id="rechargeStudentId" required placeholder="e.g., STU001">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (Rs) *</label>
+                                <input type="number" id="rechargeAmount" min="1" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Mode</label>
+                                <select id="rechargeMode">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Online">Online</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Recharge Wallet</button>
+                    </form>
+                </div>
+
+                <!-- Recharge History -->
+                <div class="data-table">
+                    <h4>Recent Recharges</h4>
+                    <table id="rechargeTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Amount (Rs)</th>
+                                <th>Mode</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- QR Reports -->
+            <div id="qr-reports" class="sub-section">
+                <h3>QR Sales Reports</h3>
+                <div class="report-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="qrReportType">
+                                <option value="daily-qr">Daily QR Sales</option>
+                                <option value="student-expense">Student Expense</option>
+                                <option value="low-balance">Low Balance Students</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="qrReportDate">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn-primary" onclick="generateQRReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table" id="qrReportDiv">
+                    <h4>Report Results</h4>
+                    <div id="qrReportContent"></div>
+                </div>
+            </div>
+
+            <!-- Parent View -->
+            <div id="parent-view" class="sub-section">
+                <h3>Parent View (Read-Only)</h3>
+                <div class="form-card">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Enter Student ID</label>
+                            <input type="text" id="parentStudentId" placeholder="e.g., STU001">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn-primary" onclick="loadParentView()">View Dashboard</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="parentDashboard" style="display:none;">
+                    <div class="dashboard-grid">
+                        <div class="stat-card blue">
+                            <h3>Current Balance</h3>
+                            <div class="stat-number" id="parentBalance">Rs0</div>
+                        </div>
+                        <div class="stat-card orange">
+                            <h3>Today's Expense</h3>
+                            <div class="stat-number" id="parentTodayExpense">Rs0</div>
+                        </div>
+                        <div class="stat-card green">
+                            <h3>Monthly Expense</h3>
+                            <div class="stat-number" id="parentMonthlyExpense">Rs0</div>
+                        </div>
+                        <div class="stat-card red">
+                            <h3>Daily Limit</h3>
+                            <div class="stat-number" id="parentDailyLimit">Rs0</div>
+                        </div>
+                    </div>
+
+                    <div class="data-table">
+                        <h4>Recent Transactions</h4>
+                        <table id="parentTransactionTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Amount</th>
+                                    <th>Counter</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div class="data-table">
+                        <h4>Recharge History</h4>
+                        <table id="parentRechargeTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MESS SECTION (NEW) -->
+        <section id="mess" class="section">
+            <h2>🍽️ Mess Management</h2>
+            <p class="section-desc">Student & Staff Mess (Hostel / Day Scholar / Office)</p>
+            
+            <div class="setup-tabs">
+                <button class="tab-btn active" onclick="showSubSection('mess-student-entry')">Student Meal Entry</button>
+                <button class="tab-btn" onclick="showSubSection('mess-staff-entry')">Staff Meal Entry</button>
+                <button class="tab-btn" onclick="showSubSection('mess-billing')">Billing</button>
+                <button class="tab-btn" onclick="showSubSection('mess-reports')">Reports</button>
+                <button class="tab-btn" onclick="showSubSection('mess-masters')">Masters</button>
+            </div>
+
+            <!-- Student Meal Entry -->
+            <div id="mess-student-entry" class="sub-section active">
+                <h3>Student Meal Entry (QR Scan)</h3>
+                
+                <div class="form-card">
+                    <h4>Scan Student ID</h4>
+                    <input type="text" id="messStudentQR" placeholder="Scan QR or enter Student ID" 
+                           style="font-size:20px; padding:15px; width:100%; border:2px solid #667eea; border-radius:8px;"
+                           onchange="scanMessStudent(this.value); this.value='';">
+                    <p style="margin-top:10px; color:#718096; font-size:14px;">
+                        <strong>Test IDs:</strong> MS001, MS002, MS003
+                    </p>
+                </div>
+
+                <div id="messStudentPanel" style="display:none;" class="form-card">
+                    <h4>Student Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Student ID:</label>
+                            <strong id="messStudentId" style="font-size:18px;">---</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <strong id="messStudentName" style="font-size:18px;">---</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Type:</label>
+                            <strong id="messStudentType" style="font-size:18px;">---</strong>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin-top:20px;">Mark Meal</h4>
+                    <div class="action-buttons">
+                        <button class="quick-sale-btn btn-success" onclick="markStudentMeal('Breakfast')" disabled>Breakfast</button>
+                        <button class="quick-sale-btn btn-success" onclick="markStudentMeal('Lunch')" disabled>Lunch</button>
+                        <button class="quick-sale-btn btn-success" onclick="markStudentMeal('Dinner')" disabled>Dinner</button>
+                    </div>
+                    
+                    <button class="btn-danger" style="margin-top:20px;" onclick="resetMessSession()">Reset / Next</button>
+                </div>
+            </div>
+
+            <!-- Staff Meal Entry -->
+            <div id="mess-staff-entry" class="sub-section">
+                <h3>Staff Meal Entry</h3>
+                
+                <div class="form-card">
+                    <h4>Enter Staff ID</h4>
+                    <input type="text" id="messStaffId" placeholder="Enter Staff ID" 
+                           style="font-size:20px; padding:15px; width:100%; border:2px solid #667eea; border-radius:8px;"
+                           onchange="scanMessStaff(this.value); this.value='';">
+                    <p style="margin-top:10px; color:#718096; font-size:14px;">
+                        <strong>Test IDs:</strong> STF001, STF002, STF003
+                    </p>
+                </div>
+
+                <div id="messStaffPanel" style="display:none;" class="form-card">
+                    <h4>Staff Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Staff ID:</label>
+                            <strong id="messStaffIdDisplay" style="font-size:18px;">---</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <strong id="messStaffName" style="font-size:18px;">---</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Meal Allowed:</label>
+                            <strong id="messStaffAllowed" style="font-size:18px;">---</strong>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin-top:20px;">Mark Meal</h4>
+                    <div class="action-buttons">
+                        <button class="quick-sale-btn btn-success" onclick="markStaffMeal('Breakfast')" disabled>Breakfast</button>
+                        <button class="quick-sale-btn btn-success" onclick="markStaffMeal('Lunch')" disabled>Lunch</button>
+                        <button class="quick-sale-btn btn-success" onclick="markStaffMeal('Dinner')" disabled>Dinner</button>
+                    </div>
+                    
+                    <button class="btn-danger" style="margin-top:20px;" onclick="resetMessSession()">Reset / Next</button>
+                </div>
+            </div>
+
+            <!-- Billing -->
+            <div id="mess-billing" class="sub-section">
+                <h3>Generate Monthly Bills</h3>
+                
+                <div class="form-card">
+                    <form onsubmit="event.preventDefault(); generateMessBills();">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Month *</label>
+                                <input type="month" id="messBillMonth" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Bill Type *</label>
+                                <select id="messBillType" required>
+                                    <option value="student">Student Bills</option>
+                                    <option value="staff">Staff Bills</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Generate Bills</button>
+                    </form>
+                </div>
+
+                <div class="data-table" id="messBillDiv">
+                    <h4>Generated Bills</h4>
+                    <div id="messBillContent"></div>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div id="mess-reports" class="sub-section">
+                <h3>Mess Reports</h3>
+                
+                <div class="report-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="messReportType">
+                                <option value="daily">Daily Meal Report</option>
+                                <option value="student-monthly">Student Monthly</option>
+                                <option value="staff-monthly">Staff Monthly</option>
+                                <option value="summary">Monthly Summary</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date/Month</label>
+                            <input type="text" id="messReportDate" placeholder="YYYY-MM-DD or YYYY-MM">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn-primary" onclick="generateMessReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="data-table" id="messReportDiv">
+                    <h4>Report Results</h4>
+                    <div id="messReportContent"></div>
+                </div>
+            </div>
+
+            <!-- Masters -->
+            <div id="mess-masters" class="sub-section">
+                <h3>Mess Masters</h3>
+                
+                <div class="form-card">
+                    <h4>Add Mess Student</h4>
+                    <form id="messStudentForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Student ID *</label>
+                                <input type="text" id="newMessStudentId" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Name *</label>
+                                <input type="text" id="newMessStudentName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Student Type *</label>
+                                <select id="newMessStudentType" required>
+                                    <option value="Hostel">Hostel</option>
+                                    <option value="Day Scholar">Day Scholar</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Monthly Fee (Rs) *</label>
+                                <input type="number" id="newMessStudentFee" required min="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Student</button>
+                    </form>
+                </div>
+
+                <div class="data-table">
+                    <h4>Mess Students</h4>
+                    <table id="messStudentsTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Monthly Fee</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </section>
